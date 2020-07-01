@@ -15,7 +15,7 @@ class MockLogger extends LoggerApi {
 
 describe('logger.api', () => {
   test('canary verifies test infrastructure', () => {
-      expect(true).toEqual(true);
+    expect(true).toEqual(true);
   });
 
   describe('given LoggerApi.time()', () => {
@@ -25,7 +25,7 @@ describe('logger.api', () => {
         const action = 'action';
         const duration = 500;
 
-        await promiseTimeout(() => {return}, duration);
+        await promiseTimeout(() => {return;}, duration);
 
         const logger: LoggerApi = new MockLogger();
         logger.time(action, start);

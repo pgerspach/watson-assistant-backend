@@ -6,10 +6,9 @@ import {buildApiServer} from '../helper';
 
 describe('Hello World service', () =>{
 
-  let app: ApiServer;
   let service: HelloWorldService;
   beforeAll(() => {
-    app = buildApiServer();
+    buildApiServer();
 
     service = Container.get(HelloWorldService);
   });
@@ -30,6 +29,6 @@ describe('Hello World service', () =>{
       test('then return "Hello, World!"', async () => {
         expect(await service.greeting()).toEqual('Hello, World!');
       });
-    })
+    });
   });
 });

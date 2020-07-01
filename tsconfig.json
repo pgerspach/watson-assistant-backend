@@ -9,6 +9,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
+    // "esModuleInterop": true,
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "es6",
@@ -19,6 +20,12 @@
     "lib": [
       "es6",
       "dom"
+    ],
+    "plugins": [
+      {
+        "transform": "ts-auto-mock/transformer",
+        "cacheBetweenTests": false
+      }
     ]
   },
   "include": [

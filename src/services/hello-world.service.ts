@@ -5,10 +5,7 @@ import {LoggerApi} from '../logger';
 export class HelloWorldService implements HelloWorldApi {
   logger: LoggerApi;
 
-  constructor(
-    @Inject
-    logger: LoggerApi,
-  ) {
+  constructor(@Inject logger: LoggerApi) {
     this.logger = logger.child('HelloWorldService');
   }
 

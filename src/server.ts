@@ -12,9 +12,9 @@ import fs = require('fs');
 import http = require('http');
 import path = require('path');
 import cors = require('cors');
+require('dotenv').config();
 
-const config = npmPackage.config || {
-  protocol: 'http',
+const config = npmPackage.config || {protocol: 'http',
   host: 'localhost',
   port: 3000,
   'context-root': '/'
@@ -38,9 +38,9 @@ export class ApiServer {
     this.app.use(cors());
 
     if (!apiContext || apiContext === '/') {
-      this.app.use(express.static(path.join(process.cwd(), 'public'), { maxAge: 31557600000 }));
+      this.app.use(express.static(path.join(process.cwd(), 'public'), {maxAge: 31557600000}));
     } else {
-      this.app.use(apiContext, express.static(path.join(process.cwd(), 'public'), { maxAge: 31557600000 }));
+      this.app.use(apiContext, express.static(path.join(process.cwd(), 'public'), {maxAge: 31557600000}));
     }
 
     const apiRouter: express.Router = express.Router();
@@ -87,7 +87,7 @@ export class ApiServer {
 
         const address = addressInfo.address === '::' ? 'localhost' : addressInfo.address;
 
-        // tslint:disable-next-line:no-console
+        /* eslint-disable-next-line no-alert, no-console */
         console.log(`Listening to http://${address}:${addressInfo.port}`);
 
         return resolve(this);

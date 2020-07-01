@@ -11,7 +11,7 @@ export class HelloWorldController {
   @Inject
   _baseLogger: LoggerApi;
 
-  get logger() {
+  get logger(): LoggerApi {
     return this._baseLogger.child('HelloWorldController');
   }
 

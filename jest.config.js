@@ -16,6 +16,11 @@ module.exports = {
     "pacts/",
     "coverage/"
   ],
+  globals: {
+    "ts-jest": {
+      "compiler": "ttypescript"
+    }
+  },
   testResultsProcessor: "jest-sonar-reporter",
   testMatch: ["<rootDir>/test/**/*.spec.ts"],
   setupFiles: [

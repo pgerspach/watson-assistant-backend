@@ -2,7 +2,7 @@ import {SimpleWorkerConfig} from '../src/config/simple-worker.config';
 
 describe('simple-worker.config', () => {
   test('canary verifies test infrastructure', () => {
-      expect(true).toEqual(true);
+    expect(true).toEqual(true);
   });
 
   describe('given SimpleWorkerConfig', () => {

@@ -6,7 +6,7 @@ import {LoggerApi, NoopLoggerService} from '../../src/logger';
 
 describe('simple.worker', () => {
   test('canary verifies test infrastructure', () => {
-      expect(true).toEqual(true);
+    expect(true).toEqual(true);
   });
 
   describe('given SimpleWorker', () => {
@@ -33,7 +33,7 @@ describe('simple.worker', () => {
       test('then run until stopped', async () => {
         const observable = worker.start();
 
-        await promiseTimeout(() => {return}, 600);
+        await promiseTimeout(() => {return;}, 600);
 
         await worker.stop().toPromise();
 
