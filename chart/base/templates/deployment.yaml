@@ -67,6 +67,9 @@ spec:
             - secretRef:
                 name: {{ default "jaeger-access" .Values.jaegerSecretName }}
                 optional: true
+            {{- with .Values.envFrom }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
