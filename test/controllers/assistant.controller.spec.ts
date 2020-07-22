@@ -5,7 +5,7 @@ import {Container, Scope} from 'typescript-ioc';
 import {SessionResponse, Response, MessageResponse} from 'ibm-watson/assistant/v2';
 import {AssistantApi} from '../../src/services';
 import {buildApiServer} from '../helper';
-import {ApiServer} from 'src/server';
+import {ApiServer} from '../../src/server';
 import {AssistantRestUtil} from '../../src/util/rest';
 import {mocked} from 'ts-jest/utils';
 

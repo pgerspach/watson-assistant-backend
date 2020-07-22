@@ -9,4 +9,4 @@ pipeline-build-config.json
 test-report.xml
 .scannerwork/
 .env
-.DS_Store   
+.DS_Store

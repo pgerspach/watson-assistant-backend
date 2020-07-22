@@ -1,8 +1,7 @@
 import {ContainerConfiguration, Scope} from 'typescript-ioc';
 import {HelloWorldApi} from './hello-world.api';
 import {HelloWorldService} from './hello-world.service';
-import {AssistantApi} from './assistant.api';
-import {AssistantService} from './assistant.service';
+import {DataService, DataApi, AssistantApi, AssistantService} from '.';
 
 const config: ContainerConfiguration[] = [
   {
@@ -14,6 +13,11 @@ const config: ContainerConfiguration[] = [
     bind: AssistantApi,
     to: AssistantService,
     scope: Scope.Singleton,
+  },
+  {
+    bind: DataApi,
+    to: DataService,
+    scope: Scope.Singleton
   }
 ];
 
