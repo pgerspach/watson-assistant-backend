@@ -5,4 +5,5 @@ export abstract class DataDao {
   abstract getEntities(): Promise<AssistantData[]>
   abstract recordIntent(intent: Intent): void
   abstract recordEntity(entity: Entity): void
+  abstract getDb(): any
 }

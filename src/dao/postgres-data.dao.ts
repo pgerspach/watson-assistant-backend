@@ -1,6 +1,7 @@
 import {DataDao} from './data.dao';
 import {AssistantData, PostgresConfig, Intent, Entity} from '../../src/model';
 import {InjectValue} from 'typescript-ioc/dist/decorators';
+import {getGroupedCount} from '../util/sql/queries.util';
 import * as Bookshelf from 'bookshelf';
 import * as Knex from 'knex';
 
@@ -9,6 +10,7 @@ export class PostgresDataDao implements DataDao {
 
   config: PostgresConfig;
   bookshelf: Bookshelf;
+  db: Knex;
   Intent: typeof Bookshelf.Model;
   Entity: typeof Bookshelf.Model;
 
@@ -17,32 +19,31 @@ export class PostgresDataDao implements DataDao {
     this.connect();
   } 
 
+  getDb(): any {
+    return this.db;
+  }
+
   connect(): void {
-    const knexInstance: Knex = Knex({
+    this.db= Knex({
       client: 'postgres',
       connection: {
         ...this.config,
         charset  : 'utf8' 
       }
     });
-
-    this.bookshelf = Bookshelf(knexInstance);
-    this.Intent = this.bookshelf.model('Intent', {
+    const bookshelf = Bookshelf(this.db);
+    this.Intent = bookshelf.model('Intent', {
       tableName: 'intents',
       hasTimestamps: false,
     });
-    this.Entity = this.bookshelf.model('Entity', {
+    this.Entity = bookshelf.model('Entity', {
       tableName: 'entities',
       hasTimestamps: false
     });
   }
 
   async getIntents(): Promise<AssistantData[]> {
-    const intents = await this.bookshelf.knex.raw(`
-      SELECT name, COUNT(*) 
-      FROM intents 
-      GROUP BY name;
-    `)
+    const intents = await this.db.raw(getGroupedCount('intents', 'name'))
       .then(res => res.rows.map(row => (
         {...row,
           count: Number(row.count)
@@ -53,11 +54,7 @@ export class PostgresDataDao implements DataDao {
   }
 
   async getEntities(): Promise<AssistantData[]> {
-    const entities = await this.bookshelf.knex.raw(`
-      SELECT name, COUNT(*) 
-      FROM entities 
-      GROUP BY name;
-    `)
+    const entities = await this.db.raw(getGroupedCount('entities', 'name'))
       .then(res => res.rows.map(row => (
         {...row,
           count: Number(row.count)

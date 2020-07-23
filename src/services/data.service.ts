@@ -1,5 +1,5 @@
 import {DataApi} from './data.api';
-import {AssistantData, Intent, Entity} from '../model';
+import {AssistantData} from '../model';
 import {Inject} from 'typescript-ioc';
 import {DataDao} from '../dao';
 import AssistantV2 = require('ibm-watson/assistant/v2');

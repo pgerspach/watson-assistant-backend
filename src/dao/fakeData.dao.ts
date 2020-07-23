@@ -13,6 +13,10 @@ export class FakeDataDao implements DataDao {
     this.logger = logger.child('FakeDataDao');
   }
 
+  getDb(): any {
+    return null;
+  }
+
   async getIntents(): Promise<AssistantData[]> {
     const topIntents = [
       {

@@ -39,6 +39,7 @@ class MockDataDao implements DataDao {
   getEntities = jest.fn().mockName('getEntities');
   recordIntent = jest.fn().mockName('recordIntent');
   recordEntity = jest.fn().mockName('recordEntity');
+  getDb = jest.fn();
 }
 
 describe('data.service', () => {
