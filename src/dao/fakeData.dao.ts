@@ -1,5 +1,5 @@
 import {DataDao} from '.';
-import {AssistantData, Intent} from '../../src/model';
+import {AssistantData, Intent, Entity} from '../../src/model';
 import {LoggerApi} from '../../src/logger';
 import {Inject} from 'typescript-ioc';
 
@@ -7,6 +7,7 @@ export class FakeDataDao implements DataDao {
   logger: LoggerApi;
 
   recordIntent(intent: Intent): void { this.logger.info(intent);}
+  recordEntity(entity: Entity): void { this.logger.info(entity);}
 
   constructor(@Inject logger: LoggerApi) {
     this.logger = logger.child('FakeDataDao');

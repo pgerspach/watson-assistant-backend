@@ -7,6 +7,13 @@ export async function up(knex: Knex): Promise<void> {
       table.string('name', 255).notNullable();
       table.decimal('confidence').notNullable();
       table.uuid('session_id').notNullable();
+    })
+    .createTable('entities', (table) => {
+      table.increments('id');
+      table.string('name', 255).notNullable();
+      table.uuid('session_id').notNullable(); 
+      table.decimal('confidence').notNullable();
+      table.string('value', 255).notNullable();
     });
 }
 

@@ -2,7 +2,6 @@ import {GET, Path, QueryParam, POST} from "typescript-rest";
 import {Inject} from 'typescript-ioc';
 import {DataApi} from '../services';
 import {LoggerApi} from '../logger';
-import {Intent} from '../../src/model';
 
 @Path('/data')
 export class DataController {
@@ -22,12 +21,6 @@ export class DataController {
     this.logger.info('Getting top intents...');
     const result = await this.service.getTopIntents(number);
     return result;
-  }
-
-  @Path('/intent')
-  @POST
-  postIntent(intent: Intent): void {
-    this.service.recordIntent(intent);
   }
 
   @Path('/entity')

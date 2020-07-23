@@ -8,3 +8,10 @@ export interface Intent {
   confidence: number,
   session_id: string
 }
+
+export interface Entity {
+  name: string,
+  confidence: number,
+  value: string,
+  session_id: string
+}

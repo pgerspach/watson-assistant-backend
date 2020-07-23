@@ -3,8 +3,7 @@ import {Assistant} from '../entity';
 import {Inject} from 'typescript-ioc';
 import {LoggerApi} from '../logger';
 import {Response, MessageResponse, SessionResponse, Empty} from 'ibm-watson/assistant/v2';
-import {DataDao} from '../../src/dao';
-import {DataUtil} from '../../src/util/data';
+import {DataApi} from './data.api';
 
 export class AssistantService implements AssistantApi {
   logger: LoggerApi;
@@ -12,9 +11,7 @@ export class AssistantService implements AssistantApi {
   @Inject
   assistant: Assistant;
   @Inject
-  dao: DataDao
-  @Inject
-  dataUtil: DataUtil
+  dataService: DataApi
 
   constructor(@Inject logger: LoggerApi) {
     this.logger = logger.child('AssistantService');
@@ -34,12 +31,8 @@ export class AssistantService implements AssistantApi {
       }
     });
 
-    if (messageResponse.result.output.intents && messageResponse.result.output.intents.length > 0) {
-      const topIntent = messageResponse.result.output.intents
-        .reduce((top, i) => i.confidence > top.confidence ? i : top);
-
-      this.dao.recordIntent(this.dataUtil.assistantIntentToDataIntent(topIntent, sessionId)); 
-    }
+    this.dataService.recordData(messageResponse.result.output, sessionId);
+    
     return messageResponse;
   }
 

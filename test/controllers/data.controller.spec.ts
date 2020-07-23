@@ -7,7 +7,7 @@ import * as faker from 'faker';
 import {DataApi} from '../../src/services';
 import {buildApiServer} from '../helper';
 import {ApiServer} from '../../src/server';
-import {AssistantData, Intent} from '../../src/model';
+import {AssistantData, Intent, Entity} from '../../src/model';
 
 export const AssistantDataFactory = Factory.Sync.makeFactory<AssistantData>({
   name: Factory.each(() => faker.company.bsNoun()),
@@ -20,10 +20,19 @@ export const IntentFactory = Factory.Sync.makeFactory<Intent>({
   session_id: Factory.each(() => faker.random.uuid())
 });
 
+export const EntityFactory = Factory.Sync.makeFactory<Entity>({
+  name: Factory.each(() => faker.company.bsNoun()),
+  confidence: Factory.each(() => Math.random()),
+  session_id: Factory.each(() => faker.random.uuid()),
+  value: Factory.each(() => faker.company.bsBuzz())
+});
+
 class MockDataService implements DataApi {
   getTopIntents = jest.fn().mockName('getTopIntents');
   getTopEntities = jest.fn().mockName('getTopEntities');
   recordIntent = jest.fn().mockName('recordIntent');
+  recordEntity = jest.fn().mockName('recordEntity');
+  recordData = jest.fn();
 }
 
 describe('data.controller', () => {
@@ -32,7 +41,6 @@ describe('data.controller', () => {
   let apiServer: ApiServer;
   let mockGetTopIntents: jest.Mock;
   let mockGetTopEntities: jest.Mock;
-  let mockRecordIntent: jest.Mock;
 
   beforeEach(() => {
     apiServer = buildApiServer();
@@ -41,7 +49,6 @@ describe('data.controller', () => {
     const mockService: DataApi = Container.get(DataApi);
     mockGetTopIntents = mockService.getTopIntents as jest.Mock;
     mockGetTopEntities = mockService.getTopEntities as jest.Mock;
-    mockRecordIntent = mockService.recordIntent as jest.Mock;
   });
 
   test('canary validates test infrastructure', () => {
@@ -93,17 +100,4 @@ describe('data.controller', () => {
     });
   });
 
-  describe('Given POST /data/intent', () => {
-    const intent: Intent = IntentFactory.build();
-    beforeEach(() => {
-      mockRecordIntent.mockReturnValueOnce(Promise.resolve());
-    });
-
-    test('should call DataService.recordIntent', async (done) => {
-      await request(app).post('/data/intent').send(intent).expect(204);
-      expect(mockRecordIntent).toBeCalledWith(intent);
-      
-      done();
-    });
-  });
 });

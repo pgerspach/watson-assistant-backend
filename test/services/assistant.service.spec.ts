@@ -1,20 +1,24 @@
 import {Container, Scope} from 'typescript-ioc';
-import {AssistantApi} from '../../src/services';
+import {AssistantApi, DataApi} from '../../src/services';
 import {Assistant} from '../../src/entity';
-import {AssistantConfig, PostgresConfig, Intent} from '../../src/model';
+import {AssistantConfig} from '../../src/model';
 import {InjectValue, Inject} from 'typescript-ioc/dist/decorators';
 import {assistantConfig_test} from '../../src/config';
-import {SessionResponse, Response, MessageResponse} from 'ibm-watson/assistant/v2';
 import * as faker from 'faker';
 import * as Factory from 'factory.ts';
-import AssistantV2 = require('ibm-watson/assistant/v2');
-import {DataUtil} from '../../src/util/data';
-import {DataDao} from '../../src/dao';
+import * as AssistantV2 from'ibm-watson/assistant/v2';
 import {LoggerApi} from '../../src/logger';
 
 export const assistantIntentFactory = Factory.Sync.makeFactory<AssistantV2.RuntimeIntent>({
   intent: Factory.each(() => faker.company.bsNoun()),
   confidence: Factory.each(() => Math.random()),
+});
+
+export const assistantEntityFactory = Factory.Sync.makeFactory<AssistantV2.RuntimeEntity>({
+  entity: Factory.each(() => faker.company.bsNoun()),
+  confidence: Factory.each(() => Math.random()),
+  value: Factory.each(() => faker.company.bsBuzz()),
+  location: Factory.each(() => [])
 });
 
 class MockAssistant implements Assistant {
@@ -29,18 +33,20 @@ class MockAssistant implements Assistant {
   }
 }
 
-class MockDataDao implements DataDao {
+class MockDataService implements DataApi {
   logger: LoggerApi
-  getIntents = jest.fn();
-  getEntities = jest.fn();
-  recordIntent = jest.fn().mockImplementation(() => {});
+  getTopIntents = jest.fn();
+  getTopEntities = jest.fn();
+  recordIntent = jest.fn();
+  recordEntity = jest.fn();
+  recordData = jest.fn();
 
   constructor(@Inject logger: LoggerApi) {
-    this.logger = logger.child('MockDataDao');
+    this.logger = logger.child('MockDataService');
   }
 }
 
-class MockResponse implements Response {
+class MockResponse implements AssistantV2.Response {
   result: any;
   status: 200;
   statusText: string;
@@ -50,34 +56,37 @@ class MockResponse implements Response {
   }
 }
 
-class MockCreateSessionResponse implements SessionResponse {
+class MockCreateSessionResponse implements AssistantV2.SessionResponse {
   session_id: string;
   constructor(sessionId: string){
     this.session_id = sessionId;
   }
 }
 
-class MockMessageResponse implements MessageResponse {
-  output: {intents: AssistantV2.RuntimeIntent[]}
+class MockMessageResponse implements AssistantV2.MessageResponse {
+  output: {
+    intents: AssistantV2.RuntimeIntent[],
+    entities: AssistantV2.RuntimeEntity[]
+  }
   constructor(){
-    this.output = {intents: [assistantIntentFactory.build()]};
+    this.output = {
+      intents: assistantIntentFactory.buildList(1),
+      entities: assistantEntityFactory.buildList(1)
+    };
   }
 }
 
 describe('assistant.service', () => {
   let service: AssistantApi;
-  let dataUtil: DataUtil;
   let mockCreateSession: jest.Mock;
   let mockDeleteSession: jest.Mock;
   let mockMessage: jest.Mock;
-  let mockRecordIntent: jest.Mock;
+  let mockRecordData: jest.Mock;
   let mockAssistant: Assistant;
-  let mockDataDao: DataDao;
 
   beforeAll(() => {
     Container.bind(Assistant).scope(Scope.Singleton).to(MockAssistant);
-    Container.bind(DataDao).scope(Scope.Singleton).to(MockDataDao);
-    dataUtil = Container.get(DataUtil);
+    Container.bind(DataApi).scope(Scope.Singleton).to(MockDataService);
     service = Container.get(AssistantApi);
   });
 
@@ -106,14 +115,15 @@ describe('assistant.service', () => {
 
   describe('given message', () => {
     const sessionId = faker.random.uuid();
-    const expectedResponse: Response<MessageResponse> = new MockResponse(new MockMessageResponse());
+    const expectedResponse: AssistantV2.Response<AssistantV2.MessageResponse> = new MockResponse(new MockMessageResponse());
 
     beforeEach(() => {
       mockAssistant = Container.get(Assistant);
       mockMessage = mockAssistant.message as jest.Mock;
       mockMessage.mockClear();
       mockMessage.mockReturnValue(Promise.resolve(expectedResponse));
-      mockRecordIntent = Container.get(DataDao).recordIntent as jest.Mock;
+      mockRecordData = Container.get(DataApi).recordData as jest.Mock;
+      
     });
 
     test('it should return a message response', async done => {
@@ -122,12 +132,13 @@ describe('assistant.service', () => {
       done();
     });
 
-    test('it should call dao.recordIntent', async (done) => {
+    test('it should call dataApi.recordData', async (done) => {
       await service.sendMessage(sessionId, 'test message');
-      expect(mockRecordIntent)
-        .toBeCalledWith(dataUtil.assistantIntentToDataIntent(expectedResponse.result.output.intents[0], sessionId));
-      done();
+      expect(mockRecordData)
+        .toBeCalledWith(expectedResponse.result.output, sessionId);
+      done(); 
     });
+
   });
 
   describe('delete session', () => {
