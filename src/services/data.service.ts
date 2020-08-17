@@ -1,5 +1,5 @@
 import {DataApi} from './data.api';
-import {AssistantData} from '../model';
+import {AssistantData, DataConfig} from '../model';
 import {Inject} from 'typescript-ioc';
 import {DataDao} from '../dao';
 import AssistantV2 = require('ibm-watson/assistant/v2');
@@ -13,6 +13,8 @@ export class DataService implements DataApi {
   dao: DataDao
   @Inject
   dataUtil: DataUtil
+  @Inject
+  dataConfig: DataConfig
 
   constructor(@Inject logger: LoggerApi) {
     this.logger = logger.child('Data Service');
@@ -37,6 +39,8 @@ export class DataService implements DataApi {
   }
 
   recordData(data: AssistantV2.MessageOutput, sessionId: string): void {
+    if (!this.dataConfig.recordData) return;
+    
     if(data.intents && data.intents.length > 0) {
       const topIntent = data.intents
         .reduce((top, i) => i.confidence > top.confidence ? i : top);
