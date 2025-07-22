@@ -81,7 +81,7 @@
     "eslint": "^7.3.1",
     "factory.ts": "^0.5.1",
     "faker": "^4.1.0",
-    "jest": "^25.2.4",
+    "jest": "^30.0.5",
     "jest-plugin-context": "^2.9.0",
     "jest-sonar-reporter": "^2.0.0",
     "jest-ts-auto-mock": "^1.0.11",
