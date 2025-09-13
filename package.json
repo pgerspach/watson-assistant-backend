@@ -41,7 +41,7 @@
     "cls-hooked": "^4.2.2",
     "cors": "^2.8.5",
     "express-pino-logger": "^4.0.0",
-    "ibm-watson": "^5.6.0",
+    "ibm-watson": "^11.0.0",
     "jaeger-client": "^3.18.0",
     "lodash": "^4.17.15",
     "opentracing": "^0.14.4",
